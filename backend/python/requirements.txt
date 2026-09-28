@@ -1,0 +1,11 @@
+# 텍스트 추출(받아쓰기) 워커 의존성.
+#   python3.11 -m venv .venv && .venv/bin/pip install -r requirements.txt
+#
+# faster-whisper 는 ctranslate2 위에서 돌며 torch 를 필요로 하지 않는다.
+# CUDA 판정도 ctranslate2 로 가능하므로 CPU/Mac 에서는 이 파일만으로 충분하다.
+# GPU 서버라면 환경에 맞는 torch 를 따로 설치해도 된다 (워커가 있으면 우선 사용).
+faster-whisper==1.1.1
+
+# faster-whisper 1.1.1 은 requests 를 import 하지만 의존성으로 선언하지 않는다
+# (huggingface-hub 1.x 가 requests 를 걷어내면서 드러난 누락).
+requests>=2.32

@@ -1,0 +1,11 @@
+packages:
+  - frontend
+  - backend
+  - shared
+
+allowBuilds:
+  esbuild: set this to true or false
+
+# Vite가 쓰는 esbuild는 postinstall로 플랫폼 바이너리를 준비해야 한다.
+onlyBuiltDependencies:
+  - esbuild

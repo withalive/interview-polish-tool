@@ -1,0 +1,30 @@
+node_modules/
+dist/
+*.tsbuildinfo
+
+# 업로드 원본 영상 / 추출된 음성 — 임시 파일이므로 커밋하지 않는다
+backend/storage/
+
+# 받아쓰기 워커용 파이썬 가상환경
+backend/python/.venv/
+backend/python/__pycache__/
+
+# 테스트 산출물 — 테스트가 만든 영상·음성·임시 저장소
+frontend/test-results/
+frontend/playwright-report/
+tests/.tmp/
+**/tests/.tmp/
+
+.DS_Store
+*.log
+
+# 환경변수 — .env.example 만 커밋한다
+.env
+.env.*
+!.env.example
+
+# 파이썬 — 위치와 상관없이 제외
+venv/
+.venv/
+__pycache__/
+*.pyc
