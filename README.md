@@ -258,12 +258,45 @@ pnpm --filter frontend dev
 > **`.env` 를 고치면 백엔드를 수동 재시작해야 한다.**
 > `--watch` 는 소스만 감시하고 `.env` 는 시작할 때 한 번만 읽는다.
 
+### GitHub Pages 배포
+
+GitHub Pages에는 **프론트엔드 빌드 결과**(`frontend/dist`)를 배포한다.
+저장소 루트를 그대로 게시하면 앱 대신 README가 표시된다.
+`.github/workflows/deploy-pages.yml`이 `main`에 push할 때 앱을 빌드하고 게시한다.
+
+1. 저장소 **Settings → Pages → Build and deployment → Source**를 **GitHub Actions**로 설정한다.
+2. 기존 Custom domain `interview.withalive.com`과 HTTPS 설정을 유지한다.
+3. `main`에 push하거나 Actions에서 **Deploy frontend to GitHub Pages → Run workflow**를 실행한다.
+
+배포 경로는 Pages 설정에서 자동으로 가져오므로 커스텀 도메인과
+`https://withalive.github.io/interview-polish-tool/` 형태를 모두 지원한다.
+Pages 빌드는 `/#/text`, `/#/topics`처럼 해시 라우팅을 사용해 새로고침 시 404를 방지한다.
+로컬 개발은 기존 `/text`, `/topics` 경로를 유지한다.
+
+**로그인·음성 추출·받아쓰기에는 별도의 백엔드 서버가 필요하다.**
+Pages는 Express, ffmpeg, Python/Whisper를 실행하지 않는다.
+백엔드 주소가 설정되지 않은 Pages 빌드에는 로그인 화면에 서버 연결 안내가 표시된다.
+
+백엔드를 준비한 뒤 다음을 설정한다.
+
+- Node.js, ffmpeg, Python 환경을 갖춘 서버에서 `pnpm --filter backend start`로 백엔드를 실행하고 HTTPS로 제공한다.
+- 서버에 `AUTH_USERS`와 `AUTH_COOKIE_SECURE=true`를 설정한다. `backend/.env`는 Pages에 업로드하지 않는다.
+- 저장소 **Settings → Secrets and variables → Actions → Variables**에 `VITE_API_BASE_URL`을 등록한다.
+  값은 `/api`를 포함한 실제 API 주소(예: `https://api.example.com/api`)다. 설정 후 워크플로를 다시 실행한다.
+- 현재 인증은 `SameSite=Lax` 쿠키를 사용한다. 프론트가 `interview.withalive.com`이면
+  API도 HTTPS의 `withalive.com` 하위 도메인으로 제공해야 한다.
+  서로 다른 사이트의 도메인을 사용하려면 쿠키/CORS 설계를 별도로 변경해야 한다.
+
+`VITE_` 환경변수는 빌드 결과에 공개된다. 여기에 계정, 비밀번호, API 키를 넣지 않는다.
+
 ---
 
 ## 9. 환경변수
 
-모두 `backend/.env` 에 둔다. 프론트엔드는 환경변수를 쓰지 않는다
-(`API_PROXY_TARGET` 만 E2E 테스트가 내부적으로 사용).
+서버 설정은 `backend/.env`에 둔다. 프론트엔드의 선택 설정 `VITE_API_BASE_URL`은
+`frontend/.env` 또는 Pages 빌드 시 GitHub Actions 변수로 전달한다(`frontend/.env.example` 참고).
+로컬에서는 생략하면 기존 `/api` 프록시를 사용한다.
+`API_PROXY_TARGET`은 개발 서버와 E2E 테스트의 프록시 대상을 지정한다.
 
 ### 필수
 

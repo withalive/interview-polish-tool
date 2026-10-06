@@ -3,6 +3,8 @@ import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
+  // configure-pages가 알려주는 경로: 커스텀 도메인은 /, 프로젝트 Pages는 /저장소명/.
+  base: process.env.PAGES_BASE_PATH || '/',
   plugins: [react(), tailwindcss()],
   server: {
     // 127.0.0.1과 localhost 양쪽에서 열리도록 명시한다.

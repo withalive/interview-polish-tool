@@ -8,9 +8,17 @@ import type {
 } from '@interview/shared';
 import { emitUnauthorized } from './authEvents';
 
-const BASE = '/api';
+const configuredBase = import.meta.env.VITE_API_BASE_URL?.trim();
+const BASE = (configuredBase || '/api').replace(/\/+$/, '');
+
+export const needsApiConfiguration =
+  import.meta.env.MODE === 'github-pages' && !configuredBase;
+
+export const API_CONFIGURATION_NOTICE =
+  '서버 연결이 아직 설정되지 않아 로그인과 파일 처리를 사용할 수 없습니다.';
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
+  if (needsApiConfiguration) throw new Error(API_CONFIGURATION_NOTICE);
   const response = await fetch(`${BASE}${path}`, {
     ...init,
     // 세션 쿠키 기반 인증 — 모든 요청에 쿠키를 싣는다.

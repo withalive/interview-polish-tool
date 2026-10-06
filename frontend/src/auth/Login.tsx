@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { useAuth } from './AuthProvider';
+import { API_CONFIGURATION_NOTICE, needsApiConfiguration } from '../lib/api';
 
 export default function Login() {
   const { login, notice } = useAuth();
@@ -28,6 +29,12 @@ export default function Login() {
         <p className="mt-1 text-sm text-slate-500">
           인터뷰 처리 도구 (내부 도구)
         </p>
+
+        {needsApiConfiguration && (
+          <p role="status" className="mt-4 rounded-md bg-amber-50 p-3 text-sm text-amber-800">
+            {API_CONFIGURATION_NOTICE}
+          </p>
+        )}
 
         <form onSubmit={handleSignIn} className="mt-6 space-y-4">
           <div>
@@ -62,7 +69,7 @@ export default function Login() {
           {error && <p className="text-xs text-rose-600">{error}</p>}
           <button
             type="submit"
-            disabled={busy}
+            disabled={busy || needsApiConfiguration}
             className="w-full rounded-md bg-sky-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-sky-700 disabled:cursor-not-allowed disabled:bg-slate-300"
           >
             {busy ? '로그인 중…' : '로그인'}
